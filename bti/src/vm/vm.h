@@ -31,6 +31,10 @@
 #define OPERATOR_IN 27
 #define OPERATOR_OUT 28
 
+#define INSTRUCTION_OPERATOR 0x1f
+#define INSTRUCTION_REGISTER 0x60
+#define INSTRUCTION_LENGTH 0x60
+
 extern unsigned char bt_vm_data[10000];
 extern unsigned char bt_vm_code [10000];
 
