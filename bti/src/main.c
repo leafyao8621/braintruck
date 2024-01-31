@@ -10,7 +10,7 @@ int main(void) {
         return 0;
     }
     bt_parser_log();
-    ret = bt_vm_run(5);
+    ret = bt_vm_run(47, 0);
     printf("errcode: %d\nerr: %s\n", ret, bt_errcode_lookup[ret]);
     if (ret) {
         return 0;

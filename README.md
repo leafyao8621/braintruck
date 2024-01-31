@@ -37,28 +37,30 @@ pppooooo
 * `lnot [bwdq]!`
 * `mov [bwdq]=`
 * `eq [bwdq]e`
+* `sl [bwdq]{`
 #### Format
 `0llooooo`
 
-### Bit Shift
-#### Instructions
-* `s [bwdq][su][{}]`
-#### Format
-`sd0ooooo`
-
 ### Signed Arithmetic and Logical Operations
 #### Instructions
-* `lt [bwdq][su]<`
-* `gt [bwdq][su]>`
+* `lt [bwdq][su]l`
+* `gt [bwdq][su]g`
+* `sr [bwdq][su]}`
 #### Format
 `sllooooo`
 
+### Load Immediate Byte
+##### Instruction
+* `ld [0-9A-F]{2}`
+#### Format
+`000ooooo 0xDD`
+
 ### IO
 #### Instructions
-* `in [bwdqs],`
-* `out [bwdqs].`
+* `in [bwdqs]?,`
+* `out [bwdqs]?.`
 #### Format
-* `0llooooo`
-* `1s0ooooo`
+* `0s0ooooo`
+* `1llooooo`
 
 

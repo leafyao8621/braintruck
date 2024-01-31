@@ -6,9 +6,11 @@
 #include <stdint.h>
 
 #define STATE_SIGN 0xC0
+#define STATE_LD 0xC0
 #define STATE_LENGTH_ENABLE 0x20
 #define STATE_LENGTH 0x18
 #define STATE_REGISTER 0x6
+#define STATE_STR 0x1
 
 unsigned char state;
 
@@ -326,6 +328,236 @@ void bt_parser_log(void) {
                 break;
             }
             break;
+        case OPERATOR_SL:
+            switch (*iter & INSTRUCTION_LENGTH) {
+            case 0x0:
+                printf("0x%04X 0x%02X b{\n", idx, *iter);
+                break;
+            case 0x20:
+                printf("0x%04X 0x%02X w{\n", idx, *iter);
+                break;
+            case 0x40:
+                printf("0x%04X 0x%02X d{\n", idx, *iter);
+                break;
+            case 0x60:
+                printf("0x%04X 0x%02X q{\n", idx, *iter);
+                break;
+            }
+            break;
+        case OPERATOR_LT:
+            switch (*iter & INSTRUCTION_LENGTH) {
+            case 0x0:
+                printf(
+                    "0x%04X 0x%02X b%cl\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x20:
+                printf(
+                    "0x%04X 0x%02X w%cl\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x40:
+                printf(
+                    "0x%04X 0x%02X d%cl\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x60:
+                printf(
+                    "0x%04X 0x%02X q%cl\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            }
+            break;
+        case OPERATOR_GT:
+            switch (*iter & INSTRUCTION_LENGTH) {
+            case 0x0:
+                printf(
+                    "0x%04X 0x%02X b%cg\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x20:
+                printf(
+                    "0x%04X 0x%02X w%cg\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x40:
+                printf(
+                    "0x%04X 0x%02X d%cg\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x60:
+                printf(
+                    "0x%04X 0x%02X q%cg\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            }
+            break;
+        case OPERATOR_SR:
+            switch (*iter & INSTRUCTION_LENGTH) {
+            case 0x0:
+                printf(
+                    "0x%04X 0x%02X b%c}\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x20:
+                printf(
+                    "0x%04X 0x%02X w%c}\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x40:
+                printf(
+                    "0x%04X 0x%02X d%c}\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            case 0x60:
+                printf(
+                    "0x%04X 0x%02X q%c}\n",
+                    idx,
+                    *iter,
+                    *iter & INSTRUCTION_SIGN ? 's' : 'u'
+                );
+                break;
+            }
+            break;
+        case OPERATOR_LD:
+            printf(
+                "0x%04X 0x%02X 0x%02X ld\n",
+                idx,
+                *iter,
+                iter[1]
+            );
+            ++idx;
+            ++iter;
+            break;
+        case OPERATOR_IN:
+            if (*iter & INSTRUCTION_NUMERIC) {
+                switch (*iter & INSTRUCTION_LENGTH) {
+                case 0x0:
+                    printf(
+                        "0x%04X 0x%02X b,\n",
+                        idx,
+                        *iter
+                    );
+                    break;
+                case 0x20:
+                    printf(
+                        "0x%04X 0x%02X w,\n",
+                        idx,
+                        *iter
+                    );
+                    break;
+                case 0x40:
+                    printf(
+                        "0x%04X 0x%02X d,\n",
+                        idx,
+                        *iter
+                    );
+                    break;
+                case 0x60:
+                    printf(
+                        "0x%04X 0x%02X q,\n",
+                        idx,
+                        *iter
+                    );
+                    break;
+                }
+            } else {
+                if (*iter & INSTRUCTION_STR) {
+                    printf(
+                        "0x%04X 0x%02X s,\n",
+                        idx,
+                        *iter
+                    );
+                } else {
+                    printf(
+                        "0x%04X 0x%02X ,\n",
+                        idx,
+                        *iter
+                    );
+                }
+            }
+            break;
+        case OPERATOR_OUT:
+            if (*iter & INSTRUCTION_NUMERIC) {
+                switch (*iter & INSTRUCTION_LENGTH) {
+                case 0x0:
+                    printf(
+                        "0x%04X 0x%02X b.\n",
+                        idx,
+                        *iter
+                    );
+                    break;
+                case 0x20:
+                    printf(
+                        "0x%04X 0x%02X w.\n",
+                        idx,
+                        *iter
+                    );
+                    break;
+                case 0x40:
+                    printf(
+                        "0x%04X 0x%02X d.\n",
+                        idx,
+                        *iter
+                    );
+                    break;
+                case 0x60:
+                    printf(
+                        "0x%04X 0x%02X q.\n",
+                        idx,
+                        *iter
+                    );
+                    break;
+                }
+            } else {
+                if (*iter & INSTRUCTION_STR) {
+                    printf(
+                        "0x%04X 0x%02X s.\n",
+                        idx,
+                        *iter
+                    );
+                } else {
+                    printf(
+                        "0x%04X 0x%02X .\n",
+                        idx,
+                        *iter
+                    );
+                }
+            }
+            break;
         }
     }
 }
@@ -343,11 +575,13 @@ int bt_parser_parse(char *fn) {
     }
     state = 0;
     for (chr = fgetc(fin); !feof(fin); chr = fgetc(fin)) {
-        printf("chr: %c state: 0x%02X\n", chr >= 37 && chr <= 127 ? chr : '?', state);
         switch (chr) {
         case 'a':
             if (state & ~STATE_REGISTER) {
-                if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+                if (
+                    (state & STATE_SIGN) ||
+                    !(state & STATE_LENGTH_ENABLE) ||
+                    (state & STATE_STR)) {
                     fclose(fin);
                     return ERRCODE_INVALID;
                 }
@@ -355,6 +589,7 @@ int bt_parser_parse(char *fn) {
                     return ERRCODE_CODE_OVERFLOW;
                 }
                 *(iter++) = OPERATOR_LAND | ((state & STATE_LENGTH) << 2);
+                state &= ~(STATE_LENGTH | STATE_LENGTH_ENABLE);
             } else {
                 state &= ~STATE_REGISTER;
             }
@@ -457,7 +692,10 @@ int bt_parser_parse(char *fn) {
             state |= 0x38;
             break;
         case 'i':
-            if (!(state & STATE_LENGTH_ENABLE) || (state & STATE_SIGN)) {
+            if (
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_SIGN) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -468,7 +706,9 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case 'd':
-            if (state & STATE_SIGN) {
+            if (
+                (state & STATE_SIGN) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -484,7 +724,9 @@ int bt_parser_parse(char *fn) {
             }
             break;
         case '+':
-            if (state & STATE_SIGN) {
+            if (
+                (state & STATE_SIGN) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -499,7 +741,9 @@ int bt_parser_parse(char *fn) {
             }
             break;
         case '-':
-            if (state & STATE_SIGN) {
+            if (
+                (state & STATE_SIGN) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -514,7 +758,10 @@ int bt_parser_parse(char *fn) {
             }
             break;
         case '*':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -525,7 +772,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case '/':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -536,7 +786,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case '%':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -547,7 +800,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case 'n':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -558,7 +814,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case '&':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -569,7 +828,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case '|':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -580,7 +842,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case '^':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -591,7 +856,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case 'o':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -602,7 +870,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case '~':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -613,7 +884,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case '!':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -624,7 +898,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case '=':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -635,7 +912,10 @@ int bt_parser_parse(char *fn) {
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
             break;
         case 'e':
-            if ((state & STATE_SIGN) || !(state & STATE_LENGTH_ENABLE)) {
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
@@ -644,6 +924,191 @@ int bt_parser_parse(char *fn) {
             }
             *(iter++) = OPERATOR_EQ | ((state & STATE_LENGTH) << 2);
             state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
+            break;
+        case '{':
+            if (
+                (state & STATE_SIGN) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
+                fclose(fin);
+                return ERRCODE_INVALID;
+            }
+            if (idx++ == 9999) {
+                return ERRCODE_CODE_OVERFLOW;
+            }
+            *(iter++) = OPERATOR_SL | ((state & STATE_LENGTH) << 2);
+            state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH);
+            break;
+        case 'u':
+            if (
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_SIGN) ||
+                (state & STATE_STR)) {
+                fclose(fin);
+                return ERRCODE_INVALID;
+            }
+            if (idx++ == 9999) {
+                return ERRCODE_CODE_OVERFLOW;
+            }
+            state &= ~STATE_SIGN;
+            state |= 0x40;
+            break;
+        case 's':
+            if (!(state & ~STATE_REGISTER)) {
+                state |= STATE_STR;
+            } else {
+                if (
+                    !(state & STATE_LENGTH_ENABLE) ||
+                    (state & STATE_SIGN) ||
+                    (state & STATE_STR)) {
+                    fclose(fin);
+                    return ERRCODE_INVALID;
+                }
+                if (idx++ == 9999) {
+                    return ERRCODE_CODE_OVERFLOW;
+                }
+                state &= ~STATE_SIGN;
+                state |= 0x80;
+            }
+            break;
+        case 'l':
+            if (
+                !(state & STATE_SIGN) ||
+                (((state & STATE_LD) == STATE_LD)) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
+                fclose(fin);
+                return ERRCODE_INVALID;
+            }
+            if (idx++ == 9999) {
+                return ERRCODE_CODE_OVERFLOW;
+            }
+            *(iter++) =
+                OPERATOR_LT | ((state & STATE_LENGTH) << 2) | (state & 0x80);
+            state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH | STATE_SIGN);
+            break;
+        case 'g':
+            if (
+                !(state & STATE_SIGN) ||
+                (((state & STATE_LD) == STATE_LD)) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
+                fclose(fin);
+                return ERRCODE_INVALID;
+            }
+            if (idx++ == 9999) {
+                return ERRCODE_CODE_OVERFLOW;
+            }
+            *(iter++) =
+                OPERATOR_GT | ((state & STATE_LENGTH) << 2) | (state & 0x80);
+            state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH | STATE_SIGN);
+            break;
+        case '}':
+            if (
+                !(state & STATE_SIGN) ||
+                (((state & STATE_LD) == STATE_LD)) ||
+                !(state & STATE_LENGTH_ENABLE) ||
+                (state & STATE_STR)) {
+                fclose(fin);
+                return ERRCODE_INVALID;
+            }
+            if (idx++ == 9999) {
+                return ERRCODE_CODE_OVERFLOW;
+            }
+            *(iter++) =
+                OPERATOR_SR | ((state & STATE_LENGTH) << 2) | (state & 0x80);
+            state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH | STATE_SIGN);
+            break;
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case 'A':
+        case 'B':
+        case 'C':
+        case 'D':
+        case 'E':
+        case 'F':
+            if (!(state & ~STATE_REGISTER)) {
+                if (idx++ == 9998) {
+                    fclose(fin);
+                    return ERRCODE_CODE_OVERFLOW;
+                }
+                *(iter++) = OPERATOR_LD;
+                ++idx;
+                *(iter++) |= chr <= '9' ? chr - '0' : 0xA + chr - 'A';
+            } else {
+                if (
+                    ((state & STATE_LD) != STATE_LD) ||
+                    (state & STATE_LENGTH_ENABLE) ||
+                    (state & STATE_STR)) {
+                    fclose(fin);
+                    return ERRCODE_INVALID;
+                }
+                iter[-1] <<= 4;
+                iter[-1] |= chr <= '9' ? chr - '0' : 0xA + chr - 'A';
+            }
+            state ^= STATE_LD;
+            break;
+        case ',':
+            if (!(state & ~STATE_REGISTER)) {
+                if (idx++ == 9999) {
+                    fclose(fin);
+                    return ERRCODE_CODE_OVERFLOW;
+                }
+                *(iter++) = OPERATOR_IN;
+            } else {
+                if (state & STATE_LENGTH_ENABLE) {
+                    if (state & STATE_STR) {
+                        fclose(fin);
+                        return ERRCODE_INVALID;
+                    }
+                    *(iter++) =
+                        OPERATOR_IN |
+                        ((state & STATE_LENGTH) << 2) |
+                        INSTRUCTION_NUMERIC;
+                } else {
+                    if (state & STATE_LENGTH) {
+                        fclose(fin);
+                        return ERRCODE_INVALID;
+                    }
+                    *(iter++) = OPERATOR_IN | INSTRUCTION_STR;
+                }
+                state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH | STATE_STR);
+            }
+            break;
+        case '.':
+            if (!(state & ~STATE_REGISTER)) {
+                if (idx++ == 9999) {
+                    fclose(fin);
+                    return ERRCODE_CODE_OVERFLOW;
+                }
+                *(iter++) = OPERATOR_OUT;
+            } else {
+                if (state & STATE_LENGTH_ENABLE) {
+                    if (state & STATE_STR) {
+                        fclose(fin);
+                        return ERRCODE_INVALID;
+                    }
+                    *(iter++) =
+                        OPERATOR_OUT |
+                        ((state & STATE_LENGTH) << 2) |
+                        INSTRUCTION_NUMERIC;
+                } else {
+                    if (state & STATE_LENGTH) {
+                        fclose(fin);
+                        return ERRCODE_INVALID;
+                    }
+                    *(iter++) = OPERATOR_OUT | INSTRUCTION_STR;
+                }
+                state &= ~(STATE_LENGTH_ENABLE | STATE_LENGTH | STATE_STR);
+            }
             break;
         }
     }
