@@ -5,7 +5,7 @@ BIN = bti
 CFLAGS = -Wall -Wextra -Werror -pedantic -ansi
 
 %.o: %.c
-	$(CC) $(CFLAGS) -g -c $< -o $@
+	$(CC) $(CFLAGS) -O3 -c $< -o $@
 
 $(BIN): $(OBJ)
 	$(CC) $(OBJ) -o $(BIN)
