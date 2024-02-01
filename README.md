@@ -109,5 +109,6 @@ where the 6th and 5th bit indicate length.
 * `out [bwdqs]?.`:
 Output, s for string. Single character if no prefix is present.
 
-
-
+## Build Instructions
+* `cd bti`
+* `make`
