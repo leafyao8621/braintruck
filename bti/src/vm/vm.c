@@ -798,7 +798,7 @@ int bt_vm_run(uint16_t n_cell, bool verbose) {
                         return ERRCODE_DATA_OVERFLOW;
                     }
                     printf(
-                        "0x%08lX",
+                        "0x%016lX",
                         *(uint64_t*)(bt_vm_data + ma)
                     );
                     break;

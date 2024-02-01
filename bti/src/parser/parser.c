@@ -947,7 +947,7 @@ int bt_parser_parse(char *fn) {
                 fclose(fin);
                 return ERRCODE_INVALID;
             }
-            if (idx++ == 9999) {
+            if (idx == 9999) {
                 return ERRCODE_CODE_OVERFLOW;
             }
             state &= ~STATE_SIGN;
@@ -964,7 +964,7 @@ int bt_parser_parse(char *fn) {
                     fclose(fin);
                     return ERRCODE_INVALID;
                 }
-                if (idx++ == 9999) {
+                if (idx == 9999) {
                     return ERRCODE_CODE_OVERFLOW;
                 }
                 state &= ~STATE_SIGN;

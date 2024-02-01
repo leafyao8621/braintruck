@@ -4,7 +4,7 @@
 #include "vm/vm.h"
 
 int main(void) {
-    int ret = bt_parser_parse("../scripts/a.bt");
+    int ret = bt_parser_parse("../scripts/cnt_up.bt");
     printf("errcode: %d\nerr: %s\n", ret, bt_errcode_lookup[ret]);
     if (ret) {
         return 0;
