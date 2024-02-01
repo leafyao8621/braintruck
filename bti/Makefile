@@ -12,7 +12,7 @@ $(BIN): $(OBJ)
 
 .PHONY: valgrind clean
 valgrind: $(BIN)
-	@valgrind -s --leak-check=full ./$(BIN)
+	@valgrind -s --leak-check=full ./$(BIN) ../scripts/cat.bt
 clean:
 	@rm $(OBJ)
 	@rm $(BIN)

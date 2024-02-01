@@ -10,6 +10,7 @@ int bt_vm_run(uint16_t n_cell, bool verbose) {
     uint16_t pc, ma, mx, my, cnt;
     uint8_t *iter = bt_vm_data;
     uint8_t inst = OPERATOR_NOP;
+    uint8_t temp = 0;
     pc = ma = mx = my = 0;
     if (n_cell >= 10000) {
         n_cell = 10000;
@@ -769,6 +770,50 @@ int bt_vm_run(uint16_t n_cell, bool verbose) {
         case OPERATOR_LD:
             bt_vm_data[ma] = bt_vm_code[++pc];
             break;
+        case OPERATOR_IN:
+            if (inst & INSTRUCTION_NUMERIC) {
+                switch (inst & INSTRUCTION_LENGTH) {
+                case 0x0:
+                    temp = bt_vm_data[ma + 1];
+                    scanf("%hd", (int16_t*)(bt_vm_data + ma));
+                    bt_vm_data[ma + 1] = temp;
+                    break;
+                case 0x20:
+                    if (ma >= 9998) {
+                        return ERRCODE_DATA_OVERFLOW;
+                    }
+                    scanf(
+                        "%hd",
+                        (int16_t*)(bt_vm_data + ma)
+                    );
+                    break;
+                case 0x40:
+                    if (ma >= 9996) {
+                        return ERRCODE_DATA_OVERFLOW;
+                    }
+                    scanf(
+                        "%d",
+                        (int32_t*)(bt_vm_data + ma)
+                    );
+                    break;
+                case 0x60:
+                    if (ma >= 9992) {
+                        return ERRCODE_DATA_OVERFLOW;
+                    }
+                    scanf(
+                        "%ld",
+                        (int64_t*)(bt_vm_data + ma)
+                    );
+                    break;
+                }
+            } else {
+                if (inst & INSTRUCTION_STR) {
+                    fgets((char*)(bt_vm_data + ma), 10000 - ma, stdin);
+                } else {
+                    bt_vm_data[ma] = getchar();
+                }
+            }
+            break;
         case OPERATOR_OUT:
             if (inst & INSTRUCTION_NUMERIC) {
                 switch (inst & INSTRUCTION_LENGTH) {
@@ -807,7 +852,7 @@ int bt_vm_run(uint16_t n_cell, bool verbose) {
                 if (inst & INSTRUCTION_STR) {
                     printf("%s", bt_vm_data + ma);
                 } else {
-                    printf("%c", bt_vm_data[ma]);
+                    putchar(bt_vm_data[ma]);
                 }
             }
             break;
