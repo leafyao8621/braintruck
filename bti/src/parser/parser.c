@@ -1057,11 +1057,11 @@ int bt_parser_parse(char *fn) {
             state ^= STATE_LD;
             break;
         case ',':
+            if (idx++ == 9999) {
+                fclose(fin);
+                return ERRCODE_CODE_OVERFLOW;
+            }
             if (!(state & ~STATE_REGISTER)) {
-                if (idx++ == 9999) {
-                    fclose(fin);
-                    return ERRCODE_CODE_OVERFLOW;
-                }
                 *(iter++) = OPERATOR_IN;
             } else {
                 if (state & STATE_LENGTH_ENABLE) {
@@ -1084,11 +1084,11 @@ int bt_parser_parse(char *fn) {
             }
             break;
         case '.':
+            if (idx++ == 9999) {
+                fclose(fin);
+                return ERRCODE_CODE_OVERFLOW;
+            }
             if (!(state & ~STATE_REGISTER)) {
-                if (idx++ == 9999) {
-                    fclose(fin);
-                    return ERRCODE_CODE_OVERFLOW;
-                }
                 *(iter++) = OPERATOR_OUT;
             } else {
                 if (state & STATE_LENGTH_ENABLE) {
