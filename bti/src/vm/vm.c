@@ -11,6 +11,8 @@ int bt_vm_run(uint16_t n_cell, bool verbose) {
     uint8_t *iter = bt_vm_data;
     uint8_t inst = OPERATOR_NOP;
     uint8_t temp = 0;
+    int ret_int = 0;
+    char *ret_charptr = 0;
     pc = ma = mx = my = 0;
     if (n_cell >= 10000) {
         n_cell = 10000;
@@ -775,40 +777,49 @@ int bt_vm_run(uint16_t n_cell, bool verbose) {
                 switch (inst & INSTRUCTION_LENGTH) {
                 case 0x0:
                     temp = bt_vm_data[ma + 1];
-                    scanf("%hd", (int16_t*)(bt_vm_data + ma));
+                    ret_int = scanf("%hd", (int16_t*)(bt_vm_data + ma));
+                    if (ret_int) {}
                     bt_vm_data[ma + 1] = temp;
                     break;
                 case 0x20:
                     if (ma >= 9998) {
                         return ERRCODE_DATA_OVERFLOW;
                     }
-                    scanf(
-                        "%hd",
-                        (int16_t*)(bt_vm_data + ma)
-                    );
+                    ret_int =
+                        scanf(
+                            "%hd",
+                            (int16_t*)(bt_vm_data + ma)
+                        );
+                    if (ret_int) {}
                     break;
                 case 0x40:
                     if (ma >= 9996) {
                         return ERRCODE_DATA_OVERFLOW;
                     }
-                    scanf(
-                        "%d",
-                        (int32_t*)(bt_vm_data + ma)
-                    );
+                    ret_int =
+                        scanf(
+                            "%d",
+                            (int32_t*)(bt_vm_data + ma)
+                        );
+                    if (ret_int) {}
                     break;
                 case 0x60:
                     if (ma >= 9992) {
                         return ERRCODE_DATA_OVERFLOW;
                     }
-                    scanf(
-                        "%ld",
-                        (int64_t*)(bt_vm_data + ma)
-                    );
+                    ret_int =
+                        scanf(
+                            "%ld",
+                            (int64_t*)(bt_vm_data + ma)
+                        );
+                    if (ret_int) {}
                     break;
                 }
             } else {
                 if (inst & INSTRUCTION_STR) {
-                    fgets((char*)(bt_vm_data + ma), 10000 - ma, stdin);
+                    ret_charptr =
+                        fgets((char*)(bt_vm_data + ma), 10000 - ma, stdin);
+                    if (ret_charptr) {}
                 } else {
                     bt_vm_data[ma] = getchar();
                 }
