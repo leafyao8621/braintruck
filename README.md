@@ -1,4 +1,4 @@
-# Brain Tuck -- A Brainf**k inspired Language
+# Brain Truck -- A Brainf**k inspired Language
 ## Overview
 Brain Tuck can be deemed as the assembly language for a machine with 10000 bytes
 of data memory and 10000 bytes of code memory. The machine has three data
